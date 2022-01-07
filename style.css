@@ -1,0 +1,13 @@
+.key {
+  text-align: center;
+  border-style: solid;
+}
+
+.key:hover {
+  background-color: green;
+}
+
+#result {
+  background-color: bisque;
+  text-align: center;
+}
