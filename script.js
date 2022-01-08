@@ -40,52 +40,65 @@ function checkKey(e) {
   if (e.currentTarget.getAttribute("id")==='clear') {
     clearOperands();
   }
-  if (operands.error) return;
-  else {
-    if (e.currentTarget.classList.contains("number")) addCharInput(e.currentTarget.textContent);
-    else if (e.currentTarget.getAttribute("id") === "decimal" && operands.input[operands.input.length-1] != ".") {
-      addCharInput(e.currentTarget.textContent); 
-    }
+  else if (!operands.error) {
+    const idx = (operands.operator==='') ? 0 : 1;
+    if (e.currentTarget.classList.contains("number")) addCharInput(e.currentTarget.textContent, idx);
+    else if ((e.currentTarget.getAttribute('id') === 'decimal') && (!operands.inputs[idx].includes('.'))) {
+      addCharInput(e.currentTarget.textContent, idx);    
+    } 
     else if (e.currentTarget.classList.contains("operator")) {
-      if (operands.input === '' && e.currentTarget.textContent === '-') {
-        addCharInput('-');
+      if (operands.inputs[idx] === 0 && e.currentTarget.textContent === '-') {
+        addCharInput('-', idx, false);
       }
-      else if (!isNaN(+operands.input[operands.input.length-1]) || operands.input[operands.input.length-1] === ".") {
-        if (operands.operator === '') {
-          addCharInput(e.currentTarget.textContent);
+      else {
+        if (operands.inputs[1] === '') {
           operands.operator = e.currentTarget.textContent;
         }
         else if (e.currentTarget.getAttribute("id")==='equal') {
-          addCharInput(`${calculation()}`, false);
+          addCharInput(`${calculation()}`, 0, false);
           operands.operator = '';
+          operands.isAnswer = true;
         }
         else {
-          addCharInput(`${calculation()}`, false);
+          addCharInput(`${calculation()}`, 0, false);
           operands.operator = e.currentTarget.textContent;
-          addCharInput(`${operands.operator}`);
+          operands.isAnswer = true;
         }
       }
     }
-    updateScreen();
   }
+  updateScreen();
 }
 
-function addCharInput(char, appendText = true) {
-  appendText ? operands.input += char : operands.input = char; 
+function addCharInput(char, index, appendText = true) {
+  appendText ? operands.inputs[index] += char : operands.inputs[index] = char; 
 }
 
 function updateScreen() {
-  result.textContent = operands.input ? `${operands.input}` : '0';
+  let textToShow = '';
+  if (operands.error) textToShow = operands.inputs[0];
+  else {
+    console.log(textToShow)
+    textToShow = operands.isAnswer ? `${Math.round(+operands.inputs[0]*100)/100}` : `${+operands.inputs[0]}`;
+    textToShow += (operands.inputs[0].slice(-1) === '.') ? '.' : '';
+    textToShow += operands.operator;
+    textToShow += operands.inputs[1];
+  }
+  result.textContent = textToShow;
 }
 
 function calculation() {
   let a, b;
-  [a, b] = [...operands.input.split(`${operands.operator}`)];
-  return operate(+a, +b, operands.operator);
+  [a, b] = [`${operands.inputs[0]}`, `${operands.inputs[1]}`];
+  const resultOperation = operate(+a, +b, operands.operator);
+  if (operands.error===true) return resultOperation;
+  operands.inputs[1] = '';
+  return resultOperation;
 }
 
 function clearOperands () {
-  operands['input'] = '';
+  operands['inputs'] = ['0', ''];
   operands['operator'] = '';
-  operands['error'] = false;  
+  operands['error'] = false;
+  operands["isAnswer"] = false;
 }
