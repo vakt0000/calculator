@@ -11,54 +11,81 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
-  return (b === 0) ? "Math Error" : a/b;
+  if (b === 0) {
+    operands.error = true;
+    return 'Math Error - Press CLEAR';
+  }
+  else return a/b;
 }
 
 function operate(a, b, operator) {
-  return operator(a, b);
+  if (operator === "×") return multiply(a, b);
+  if (operator === "+") return add(a, b);
+  if (operator === "-") return subtract(a, b);
+  if (operator === "÷") return divide(a, b);
 }
 
-const operands = {
-  input: '',
-  operator: '',
-};
+const operands = {}
+clearOperands();
 
 const result = document.querySelector("#result");
 const containerMaster = document.querySelector(".container-master");
 const keys = document.querySelectorAll(".key");
 keys.forEach(key => {
-  key.addEventListener('click', dummyFunction);
+  key.addEventListener('click', checkKey);
 });
 
 
-function dummyFunction(e) {
-  if (e.currentTarget.classList.contains("number")) {
-    operands.input += e.currentTarget.textContent; 
+function checkKey(e) {
+  if (e.currentTarget.getAttribute("id")==='clear') {
+    clearOperands();
   }
-  else if (e.currentTarget.getAttribute("id") === "decimal" && operands.input[operands.input.length-1] != ".") {
-    operands.input += e.currentTarget.textContent; 
-  }
-  else if (e.currentTarget.classList.contains("operator")) {
-    if (!isNaN(+operands.input[operands.input.length-1]) || operands.input[operands.input.length-1] === ".") {
-      if (operands.operator === '') {
-        operands.input += e.currentTarget.textContent;
-        operands.operator = e.currentTarget.textContent;
+  if (operands.error) return;
+  else {
+    if (e.currentTarget.classList.contains("number")) addCharInput(e.currentTarget.textContent);
+    else if (e.currentTarget.getAttribute("id") === "decimal" && operands.input[operands.input.length-1] != ".") {
+      addCharInput(e.currentTarget.textContent); 
+    }
+    else if (e.currentTarget.classList.contains("operator")) {
+      if (operands.input === '' && e.currentTarget.textContent === '-') {
+        addCharInput('-');
       }
-      else {
-        let a, b;
-        [a, b] = [...operands.input.split(`${operands.operator}`)];
-        operands.operator = e.currentTarget.textContent;
-        operands.input = `${callOperator(a, b)} ${operands.operator}`;
+      else if (!isNaN(+operands.input[operands.input.length-1]) || operands.input[operands.input.length-1] === ".") {
+        if (operands.operator === '') {
+          addCharInput(e.currentTarget.textContent);
+          operands.operator = e.currentTarget.textContent;
+        }
+        else if (e.currentTarget.getAttribute("id")==='equal') {
+          addCharInput(`${calculation()}`, false);
+          operands.operator = '';
+        }
+        else {
+          addCharInput(`${calculation()}`, false);
+          operands.operator = e.currentTarget.textContent;
+          addCharInput(`${operands.operator}`);
+        }
       }
     }
+    updateScreen();
   }
-  result.textContent = `${operands.input}`;
 }
 
-function callOperator(a, b) {
-  if (operands.operator === "×") return multiply(a,b);
+function addCharInput(char, appendText = true) {
+  appendText ? operands.input += char : operands.input = char; 
 }
 
-function updateResult(expression) {
-  result.textContent = `${expression}`;
+function updateScreen() {
+  result.textContent = operands.input ? `${operands.input}` : '0';
+}
+
+function calculation() {
+  let a, b;
+  [a, b] = [...operands.input.split(`${operands.operator}`)];
+  return operate(+a, +b, operands.operator);
+}
+
+function clearOperands () {
+  operands['input'] = '';
+  operands['operator'] = '';
+  operands['error'] = false;  
 }
