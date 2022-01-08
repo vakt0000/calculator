@@ -54,17 +54,17 @@ function checkKey(e) {
         if (operands.inputs[1] === '') {
           operands.operator = e.currentTarget.textContent;
         }
-        else if (e.currentTarget.getAttribute("id")==='equal') {
-          addCharInput(`${calculation()}`, 0, false);
-          operands.operator = '';
-          operands.isAnswer = true;
-        }
         else {
           addCharInput(`${calculation()}`, 0, false);
           operands.operator = e.currentTarget.textContent;
           operands.isAnswer = true;
         }
       }
+    }
+    else if (e.currentTarget.getAttribute("id")==='equal' && operands.operator != '') {
+      addCharInput(`${calculation()}`, 0, false);
+      operands.operator = '';
+      operands.isAnswer = true;
     }
   }
   updateScreen();
