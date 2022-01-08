@@ -1,6 +1,50 @@
+body {
+  border-style: solid;
+  overflow: hidden;
+}
+
+.container-master {
+  border-style: solid;
+  border-color: blue;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  min-width: 100px;
+}
+
+.calculator-body {
+  border-style: solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-style: solid;
+  border-color: burlywood;
+}
+
+.row-1,
+.row-2,
+.row-3,
+.row-4 {
+  flex: 0 0 auto;
+  border-style: dashed;
+  border-color: cadetblue;
+  display: flex;
+  justify-content: center;
+}
+
 .key {
+  font-size: 10px;
+  font-family: 'Roboto', sans-serif;
+  padding: 2px;
   text-align: center;
   border-style: solid;
+  width: 25px;
+  aspect-ratio:  1/1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .key:hover {
@@ -8,6 +52,8 @@
 }
 
 #result {
+  padding-right: 10px;
+  text-align: right;
   background-color: bisque;
-  text-align: center;
+  align-self: stretch;
 }
