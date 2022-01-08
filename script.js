@@ -2,21 +2,22 @@ const operands = {}
 const input = document.querySelector("#input");
 const result = document.querySelector("#result")
 const containerMaster = document.querySelector(".container-master");
-const keys = document.querySelectorAll(".key");
-keys.forEach(key => {
-  key.addEventListener('click', checkKey);
+const keysOperands = document.querySelectorAll('.key.operand');
+keysOperands.forEach(keyOperand => {
+  keyOperand.addEventListener('click', checkKeyOperand);
 });
+const keysFunc = document.querySelectorAll('.key.func');
+keysFunc.forEach(keyFunc => {
+  keyFunc.addEventListener('click', checkKeyFunc);
+});
+
 
 
 clearOperands();
 
 
-function checkKey(e) {
-  if (e.currentTarget.getAttribute("id")==='clear') {
-    clearOperands();
-    updateResult();
-  }
-  else if (!operands.error) {
+function checkKeyOperand(e) {
+  if (!operands.error) {
     const idx = (operands.operator==='') ? 0 : 1;
     if (e.currentTarget.classList.contains("number")) addCharInput(e.currentTarget.textContent, idx);
     else if ((e.currentTarget.getAttribute('id') === 'decimal') && (!operands.inputs[idx].includes('.'))) {
@@ -48,6 +49,38 @@ function checkKey(e) {
   updateInput();
 }
 
+function checkKeyFunc(e) {
+  if (e.currentTarget.getAttribute("id")==='clear') {
+    clearOperands();
+    updateInput();
+    updateResult();
+  }
+  else if(e.currentTarget.getAttribute("id")==="delete") {
+    if (input.textContent != '') {
+      deleteOneCharInput();
+    }
+  }
+}
+
+function deleteOneCharInput() {
+  if(operands.inputs[1] != '') {
+    console.log("operando 2");
+    operands.inputs[1] = (operands.inputs[1].length === 1) ? '' : operands.inputs[1].slice(0, -1);
+  }
+  else if (operands.operator != '') {
+    console.log("operacion");
+    operands.operator = '';
+  }
+  else {
+    if (operands.isAnswer === true) {
+      clearInput();
+      return
+    }
+    else operands.inputs[0] = (operands.inputs[0].length === 1) ? '' : operands.inputs[0].slice(0, -1);
+  }
+  updateInput();
+}
+
 function addCharInput(char, index, appendText = true) {
   appendText ? operands.inputs[index] += char : operands.inputs[index] = char;
 }
@@ -72,6 +105,10 @@ function updateInput() {
     textToShow += operands.inputs[1];
   }
   input.textContent = textToShow;
+}
+
+function clearInput() {
+  input.textContent = '';
 }
 
 function calculation() {
