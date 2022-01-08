@@ -1,42 +1,6 @@
-function add(a, b) {
-  return a + b;
-}
-
-function subtract(a,b) {
-  return a - b;
-}
-
-function multiply(a, b) {
-  if (a == '') {
-    operands.error = true;
-    return 'Syntax Error - Press AC'
-  }
-  return a * b;
-}
-
-function divide(a, b) {
-  if (a == '') {
-    operands.error = true;
-    return 'Syntax Error - Press AC'
-  }
-  if (+b === 0) {
-    operands.error = true;
-    return 'Math Error - Press AC';
-  }
-  else return a/b;
-}
-
-function operate(a, b, operator) {
-  if (operator === "×") return multiply(a, b);
-  if (operator === "+") return add(a, b);
-  if (operator === "-") return subtract(a, b);
-  if (operator === "÷") return divide(a, b);
-}
-
 const operands = {}
-clearOperands();
-
-const result = document.querySelector("#result");
+const input = document.querySelector("#input");
+const result = document.querySelector("#result")
 const containerMaster = document.querySelector(".container-master");
 const keys = document.querySelectorAll(".key");
 keys.forEach(key => {
@@ -44,9 +8,13 @@ keys.forEach(key => {
 });
 
 
+clearOperands();
+
+
 function checkKey(e) {
   if (e.currentTarget.getAttribute("id")==='clear') {
     clearOperands();
+    updateResult();
   }
   else if (!operands.error) {
     const idx = (operands.operator==='') ? 0 : 1;
@@ -66,6 +34,7 @@ function checkKey(e) {
           addCharInput(`${calculation()}`, 0, false);
           operands.operator = e.currentTarget.textContent;
           operands.isAnswer = true;
+          updateResult();
         }
       }
     }
@@ -73,26 +42,36 @@ function checkKey(e) {
       addCharInput(`${calculation()}`, 0, false);
       operands.operator = '';
       operands.isAnswer = true;
+      updateResult();
     }
   }
-  updateScreen();
+  updateInput();
 }
 
 function addCharInput(char, index, appendText = true) {
-  appendText ? operands.inputs[index] += char : operands.inputs[index] = char; 
+  appendText ? operands.inputs[index] += char : operands.inputs[index] = char;
 }
 
-function updateScreen() {
+function updateResult() {
+  if(isNaN(+operands.inputs[0])) {
+    result.textContent = 'Press AC'
+  }
+  else {
+    result.textContent = `${Math.round(+operands.inputs[0]*10000)/10000}`;
+  }
+}
+
+function updateInput() {
   let textToShow = '';
   if (operands.error) textToShow = operands.inputs[0];
   else {
     console.log(operands.inputs[0])
-    textToShow = operands.isAnswer ? `${Math.round(+operands.inputs[0]*100)/100}` : operands.inputs[0]==='' ? '' : `${+operands.inputs[0]}`;
+    textToShow = operands.isAnswer ? 'Ans' : operands.inputs[0]==='' ? '' : `${+operands.inputs[0]}`;
     textToShow += (operands.inputs[0].slice(-1) === '.') ? '.' : '';
     textToShow += operands.operator;
     textToShow += operands.inputs[1];
   }
-  result.textContent = textToShow;
+  input.textContent = textToShow;
 }
 
 function calculation() {
@@ -109,4 +88,39 @@ function clearOperands () {
   operands['operator'] = '';
   operands['error'] = false;
   operands["isAnswer"] = false;
+}
+
+function add(a, b) {
+  return +a + +b;
+}
+
+function subtract(a,b) {
+  return +a - +b;
+}
+
+function multiply(a, b) {
+  if (a == '') {
+    operands.error = true;
+    return 'Syntax Error'
+  }
+  return a * b;
+}
+
+function divide(a, b) {
+  if (a == '') {
+    operands.error = true;
+    return 'Syntax Error'
+  }
+  if (+b === 0) {
+    operands.error = true;
+    return 'Math Error';
+  }
+  else return a/b;
+}
+
+function operate(a, b, operator) {
+  if (operator === "×") return multiply(a, b);
+  if (operator === "+") return add(a, b);
+  if (operator === "-") return subtract(a, b);
+  if (operator === "÷") return divide(a, b);
 }
