@@ -52,8 +52,14 @@ body {
 }
 
 #result {
+  display: flex;
+  align-items: center;
+  justify-content: end;
   padding-right: 10px;
+  height: 19px;
   text-align: right;
   background-color: bisque;
   align-self: stretch;
+  font-family: 'Roboto', sans-serif;
+  font-size: 10px;
 }

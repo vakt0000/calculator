@@ -7,13 +7,21 @@ function subtract(a,b) {
 }
 
 function multiply(a, b) {
+  if (a == '') {
+    operands.error = true;
+    return 'Syntax Error - Press AC'
+  }
   return a * b;
 }
 
 function divide(a, b) {
-  if (b === 0) {
+  if (a == '') {
     operands.error = true;
-    return 'Math Error - Press CLEAR';
+    return 'Syntax Error - Press AC'
+  }
+  if (+b === 0) {
+    operands.error = true;
+    return 'Math Error - Press AC';
   }
   else return a/b;
 }
@@ -78,8 +86,8 @@ function updateScreen() {
   let textToShow = '';
   if (operands.error) textToShow = operands.inputs[0];
   else {
-    console.log(textToShow)
-    textToShow = operands.isAnswer ? `${Math.round(+operands.inputs[0]*100)/100}` : `${+operands.inputs[0]}`;
+    console.log(operands.inputs[0])
+    textToShow = operands.isAnswer ? `${Math.round(+operands.inputs[0]*100)/100}` : operands.inputs[0]==='' ? '' : `${+operands.inputs[0]}`;
     textToShow += (operands.inputs[0].slice(-1) === '.') ? '.' : '';
     textToShow += operands.operator;
     textToShow += operands.inputs[1];
@@ -90,14 +98,14 @@ function updateScreen() {
 function calculation() {
   let a, b;
   [a, b] = [`${operands.inputs[0]}`, `${operands.inputs[1]}`];
-  const resultOperation = operate(+a, +b, operands.operator);
+  const resultOperation = operate(a, b, operands.operator);
   if (operands.error===true) return resultOperation;
   operands.inputs[1] = '';
   return resultOperation;
 }
 
 function clearOperands () {
-  operands['inputs'] = ['0', ''];
+  operands['inputs'] = ['', ''];
   operands['operator'] = '';
   operands['error'] = false;
   operands["isAnswer"] = false;
