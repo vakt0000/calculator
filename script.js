@@ -11,10 +11,7 @@ keysFunc.forEach(keyFunc => {
   keyFunc.addEventListener('click', checkKeyFunc);
 });
 
-
-
 clearOperands();
-
 
 function checkKeyOperand(e) {
   if (!operands.error) {
@@ -39,7 +36,7 @@ function checkKeyOperand(e) {
         }
       }
     }
-    else if (e.currentTarget.getAttribute("id")==='equal' && operands.operator != '') {
+    else if (e.currentTarget.getAttribute("id")==='equal' && operands.inputs!= '') {
       addCharInput(`${calculation()}`, 0, false);
       operands.operator = '';
       operands.isAnswer = true;
@@ -114,6 +111,7 @@ function clearInput() {
 function calculation() {
   let a, b;
   [a, b] = [`${operands.inputs[0]}`, `${operands.inputs[1]}`];
+  if (operands.operator === '') return +a;
   const resultOperation = operate(a, b, operands.operator);
   if (operands.error===true) return resultOperation;
   operands.inputs[1] = '';
@@ -156,8 +154,16 @@ function divide(a, b) {
 }
 
 function operate(a, b, operator) {
+  if (b==='') {
+    operands.error = true;
+    return 'Syntax Error';
+  }
   if (operator === "×") return multiply(a, b);
   if (operator === "+") return add(a, b);
   if (operator === "-") return subtract(a, b);
   if (operator === "÷") return divide(a, b);
 }
+
+// añadir una condición en caso de que si en el display aparace "Ans" como operando 1 se pueda sustituir 
+// por lo que se presione.
+// también en otra condición, que si está en el operando 2 se pueda sustituir por números pero no al revés
