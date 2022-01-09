@@ -64,3 +64,17 @@ body {
   font-family: 'Roboto', sans-serif;
   font-size: 10px;
 }
+
+#base-10 {
+  font-size: 7px;
+}
+
+#exponent {
+  font-size:70%;
+  vertical-align:super;
+  margin-bottom: 10px;
+}
+
+#decimal {
+  padding-bottom: 8px;
+}
