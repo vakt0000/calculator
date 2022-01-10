@@ -16,6 +16,7 @@ keysFunc.forEach(keyFunc => {
 });
 
 clearOperands();
+operands.answer = ''; // This value will only be '' at the beginning
 
 function checkKeyOperand(e) {
   if (!operands.error) {
@@ -41,11 +42,11 @@ function checkKeyOperand(e) {
     }
     else if (e.currentTarget.getAttribute("id")==='equal' && operands.inputs!= '') {
       operands.isAnswer = true;
+      console.log("ghehe")
       updateResult(`${calculation()}`);
-      operands.operator = '';
     }
-  }
   updateInput();
+  }
 }
 
 function checkKeyFunc(e) {
@@ -54,7 +55,7 @@ function checkKeyFunc(e) {
     updateInput();
     updateResult('');
   }
-  else if(e.currentTarget.getAttribute("id")==="delete") {
+  else if(!operands.error && e.currentTarget.getAttribute("id")==="delete") {
     if (input.textContent != '') {
       deleteOneCharInput();
     }
@@ -85,28 +86,32 @@ function addCharInput(char, index) {
 }
 
 function updateResult(answer) {
+  operands.answer = answer;
   if(operands.isAnswer && +answer === '') {
     result.textContent = ''
   }
-  else if (operands.isAnswer && isNaN(+answer)) operands.answer = 'Press AC'
+  else if (operands.isAnswer && isNaN(+answer)) result.textContent = 'Press AC'
   else {
-    operands.answer = answer;
-    operands.inputs[0] = answer;
     result.textContent = `${Math.round(+operands.answer*10000)/10000}`;
   }
 }
 
 function updateInput() {
-  let textToShow = '';
-  if (operands.error) textToShow = operands.inputs[0];
-  else if(operands.inputs[0] === '.') textToShow = '.';
+  if (operands.error) input.textContent = operands.answer;
+  if(operands.isAnswer === true) {
+    operands.isAnswer = false;
+    return;
+  }
+  if(operands.inputs[0] === '.') input.textContent = '';
   else {
-    textToShow = operands.isAnswer ? 'Ans' : operands.inputs[0]==='' ? '' : `${+operands.inputs[0]}`;
+    let textToShow = '';
+    textToShow = operands.inputs[0]==='' ? '' : `${+operands.inputs[0]}`;
     textToShow += (operands.inputs[0].slice(-1) === '.') ? '.' : '';
     textToShow += operands.operator;
     textToShow += operands.inputs[1];
+    input.textContent = textToShow;
   }
-  input.textContent = textToShow;
+  
 }
 
 function clearInput() {
@@ -119,7 +124,6 @@ function calculation() {
   if (operands.operator === '') return +a;
   const resultOperation = operate(a, b, operands.operator);
   if (operands.error===true) return resultOperation;
-  operands.inputs[1] = '';
   return resultOperation;
 }
 
@@ -128,7 +132,6 @@ function clearOperands () {
   operands['operator'] = '';
   operands['error'] = false;
   operands["isAnswer"] = false;
-  operands['answer'] = '';
 }
 
 function add(a, b) {
@@ -140,7 +143,7 @@ function subtract(a,b) {
 }
 
 function multiply(a, b) {
-  if (a == '') {
+  if (a === '') {
     operands.error = true;
     return 'Syntax Error'
   }
