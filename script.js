@@ -1,3 +1,7 @@
+// añadir una condición en caso de que si en el display aparace "Ans" como operando 1 se pueda sustituir 
+// por lo que se presione.
+// también en otra condición, que si está en el operando 2 se pueda sustituir por números pero no al revés
+
 const operands = {}
 const input = document.querySelector("#input");
 const result = document.querySelector("#result")
@@ -29,18 +33,16 @@ function checkKeyOperand(e) {
           operands.operator = e.currentTarget.textContent;
         }
         else {
-          addCharInput(`${calculation()}`, 0, false);
           operands.operator = e.currentTarget.textContent;
           operands.isAnswer = true;
-          updateResult();
+          updateResult(`${calculation()}`);
         }
       }
     }
     else if (e.currentTarget.getAttribute("id")==='equal' && operands.inputs!= '') {
-      addCharInput(`${calculation()}`, 0, false);
-      operands.operator = '';
       operands.isAnswer = true;
-      updateResult();
+      updateResult(`${calculation()}`);
+      operands.operator = '';
     }
   }
   updateInput();
@@ -50,7 +52,7 @@ function checkKeyFunc(e) {
   if (e.currentTarget.getAttribute("id")==='clear') {
     clearOperands();
     updateInput();
-    updateResult();
+    updateResult('');
   }
   else if(e.currentTarget.getAttribute("id")==="delete") {
     if (input.textContent != '') {
@@ -78,24 +80,27 @@ function deleteOneCharInput() {
   updateInput();
 }
 
-function addCharInput(char, index, appendText = true) {
-  appendText ? operands.inputs[index] += char : operands.inputs[index] = char;
+function addCharInput(char, index) {
+  operands.inputs[index] += char;
 }
 
-function updateResult() {
-  if(isNaN(+operands.inputs[0])) {
-    result.textContent = 'Press AC'
+function updateResult(answer) {
+  if(operands.isAnswer && +answer === '') {
+    result.textContent = ''
   }
+  else if (operands.isAnswer && isNaN(+answer)) operands.answer = 'Press AC'
   else {
-    result.textContent = `${Math.round(+operands.inputs[0]*10000)/10000}`;
+    operands.answer = answer;
+    operands.inputs[0] = answer;
+    result.textContent = `${Math.round(+operands.answer*10000)/10000}`;
   }
 }
 
 function updateInput() {
   let textToShow = '';
   if (operands.error) textToShow = operands.inputs[0];
+  else if(operands.inputs[0] === '.') textToShow = '.';
   else {
-    console.log(operands.inputs[0])
     textToShow = operands.isAnswer ? 'Ans' : operands.inputs[0]==='' ? '' : `${+operands.inputs[0]}`;
     textToShow += (operands.inputs[0].slice(-1) === '.') ? '.' : '';
     textToShow += operands.operator;
@@ -123,6 +128,7 @@ function clearOperands () {
   operands['operator'] = '';
   operands['error'] = false;
   operands["isAnswer"] = false;
+  operands['answer'] = '';
 }
 
 function add(a, b) {
@@ -163,7 +169,3 @@ function operate(a, b, operator) {
   if (operator === "-") return subtract(a, b);
   if (operator === "÷") return divide(a, b);
 }
-
-// añadir una condición en caso de que si en el display aparace "Ans" como operando 1 se pueda sustituir 
-// por lo que se presione.
-// también en otra condición, que si está en el operando 2 se pueda sustituir por números pero no al revés
